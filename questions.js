@@ -1,4 +1,13 @@
 const inquirer = require('inquirer');
+const { Pool } = require('pg');
+require('dotenv').config();
+
+const pool = new Pool({
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: 'localhost',
+  database: process.env.DB_NAME, 
+});
 
 const mainMenuQs = [
   {
@@ -17,30 +26,46 @@ const addDepartmentQs = [
   },
 
 ]
+const addRoleInfo = async () => {
+  try {
 
-const addRoleInfo = () =>  {
-  const departments = pool.query('SELECT departments_id, department_name FROM departments').then(() => {
-    {}
-  })
-//   [ 
+    const res = await pool.query(
+     `SELECT department_name, salary 
+     FROM departments 
+     INNER JOIN roles ON employees.role_id = roles.id;`);
+      
+    const departments = res.rows;
 
-//   {
-//     type: 'input',
-//     message: 'What is the name of the role?',
-//     name: 'roleName',
-//   },
-//   {
-//     type: 'input',
-//     message: 'What is the salary for the role?',
-//     name: 'roleSalary',
-//   },
-//   {
-//     type: 'input',
-//     message: 'What department is the role in?',
-//     name: 'roleDepartment',
-//   },
-// ] 
-}
+    const answers = await inquirer.prompt([
+      {
+        type: 'input',
+        message: 'What is the name of the role?',
+        name: 'roleName',
+      },
+      {
+        type: 'input',
+        message: 'What is the salary for the role?',
+        name: 'roleSalary',
+        validate: (input) => !isNaN(input) || 'Please enter a valid number',
+      },
+      {
+        type: 'list',
+        message: 'What department is the role in?',
+        name: 'roleDepartment',
+        choices: departments.map(dept => ({ name: dept.department_name, value: dept.department_id })),
+      },
+    ]);
+
+    const insertRes = await pool.query(
+      'INSERT INTO roles (role_name, salary, department_id) VALUES ($1, $2, $3) RETURNING *',
+      [answers.roleName, answers.roleSalary, answers.roleDepartment]
+    );
+
+  } finally {
+    pool.end();
+  }
+};
+
 
 const addEmployeeInfo = [
  {

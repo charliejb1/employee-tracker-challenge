@@ -52,8 +52,6 @@ addRoleInfo()
 }
 
 
-
-
 const viewDepartments = () => {
   pool.query('SELECT * FROM departments', (err, res) => {
     console.log(res)
@@ -61,15 +59,12 @@ const viewDepartments = () => {
       console.error('Error executing query', err.stack);
     } else {
       console.log('Departments:');
-      res.rows.forEach(department => {
-        console.log(`ID: ${department.id}, Name: ${department.department_name}`);
-      });
+      console.table(res.rows)
+  
     }
     mainMenu()
     });
   };
-
-
 
   const viewAllRoles = () => {
     pool.query('SELECT * FROM roles', (err, res) => {
@@ -78,9 +73,8 @@ const viewDepartments = () => {
         console.error('Error executing query', err.stack);
       } else {~
         console.log('Roles:');
-        res.rows.forEach(role => {
-          console.log(`ID: ${role.id}, Title: ${role.title}, Salary: ${role.salary}, Department ID ${role.department_id}`);
-        });
+        console.table(res.rows)
+      
       }
       mainMenu()
       });
@@ -88,25 +82,23 @@ const viewDepartments = () => {
 
     const viewAllEmployees = () => {
      const query = 
-     `SELECT employees.first_name, employees.last_name, roles.salary 
+     `SELECT employees.first_name, employees.last_name, employees.id, roles.title, roles.salary, departments.department_name, managers.first_name AS Manager_First, managers.last_name AS Manager_Last
       FROM employees
-      INNER JOIN roles ON employees.role_id = roles.id;
+      LEFT JOIN roles ON employees.role_id = roles.id
+      LEFT JOIN departments ON departments.id = roles.department_id
+      LEFT JOIN employees AS managers ON employees.manager_id = managers.id
       `;
 
       pool.query(query, (err, res) => {
         console.log(res)
         if (err) {
           console.error('Error executing query', err.stack);
-        } else {~
+        } else {
           console.log('Employees:');
-          res.rows.forEach(employee => {
-            console.log(`First Name: ${employee.first_name}, Last Name: ${employee.last_name}, Salary: ${employee.salary}`);
-          });
+          console.table(res.rows)
         }
         mainMenu()
         });
       };
-
-
       
 mainMenu()
