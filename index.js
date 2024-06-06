@@ -14,7 +14,7 @@ const mainMenuQs = [
     type: 'list',
     message: 'What would you like to do?',
     name: 'userAction',
-    choices: ['Update Employee Role', 'View All Roles', 'Add Role', 'View All Departments', 'Add Department', 'View all Employees', 'Quit',]
+    choices: ['Add Employee', 'View All Roles', 'Add Role', 'View All Departments', 'Add Department', 'View all Employees', 'Quit',]
   },
 ]
 
@@ -23,7 +23,7 @@ const mainMenu = () => {
   inquirer.prompt(mainMenuQs).then(answers => {
 
     switch (answers.userAction) {
-      case 'Update Employee Role':
+      case 'Add Employee':
         addEmployeeInfo()
         break;
       case 'View All Roles':
