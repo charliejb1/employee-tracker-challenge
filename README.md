@@ -33,3 +33,6 @@ I used pool.query to select/merge particular table information that will be used
   Email: charlieboyle252@gmail.com
   
   ## Screen Recording
+  
+  https://github.com/charliejb1/employee-tracker-challenge/assets/159658511/8a01aa46-a9af-4f81-99ea-385b21681955
+
